@@ -4,8 +4,8 @@
 **Docente:** João Trindade, gabinete F.0.21
 
 **Horário:**
- - 3ª feira, 14h00, [T] G.2.06 / [P] LS2 (G.0.14)
- - 5ª feira, 17h00, [T] G.2.06
+ - 3ª feira, 14h00, [T] C.2.20 / [P] LS2 (G.0.14)
+ - 5ª feira, 17h00, [T] C.2.20
  
 **Moodle**
  - [Geral](https://2223moodle.isel.pt/course/view.php?id=6715)
