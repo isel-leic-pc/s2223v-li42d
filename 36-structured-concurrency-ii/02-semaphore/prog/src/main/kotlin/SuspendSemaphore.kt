@@ -1,9 +1,18 @@
+import java.util.concurrent.locks.ReentrantLock
+import java.util.LinkedList
+
+import kotlin.coroutines.*
+import kotlinx.coroutines.*
+
+import kotlin.concurrent.withLock
+import kotlin.time.Duration
+
 class SuspendSemaphore(initialPermits: Int) {
 	private val mutex = ReentrantLock()
 	private var currentPermits = initialPermits
 
 	private class Request(val permits: Int) {
-		var continuation: Continuation<Unit>?
+		var continuation: Continuation<Unit>? = null
 		var done = false
 	}
 	private val waiters = LinkedList<Request>()
@@ -35,12 +44,12 @@ class SuspendSemaphore(initialPermits: Int) {
 		val releaseList = LinkedList<Continuation<Unit>?>()
 		mutex.withLock {
 			currentPermits += permits
-			while (waiters.size() > 0 &&
+			while (waiters.size > 0 &&
 			       currentPermits >= waiters.first.permits) {
 				val request = waiters.removeFirst()
 				request.done = true
 				currentPermits -= request.permits
-				releaseList.add(request)
+				releaseList.add(request.continuation)
 			}
 		}
 		releaseList.forEach { continuation ->
@@ -52,7 +61,7 @@ class SuspendSemaphore(initialPermits: Int) {
 		mutex.withLock {
 			if (!request.done) {
 				waiters.remove(request)
-				throw cause
+				throw cause ?: Exception("-- unexpected call to handleCancellation --")
 			}
 			// else succeed 
 			// NOTE: the coroutine is still cancelled; the caller
